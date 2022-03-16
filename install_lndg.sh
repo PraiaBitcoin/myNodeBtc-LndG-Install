@@ -11,11 +11,13 @@ cd lndg
 sudo apt install virtualenv
 virtualenv -p python3 .venv
 .venv/bin/pip install -r requirements.txt
-.venv/bin/python initialize.py
-read -p "Anote a senha acima. Usuario: lndg-admin"
+.venv/bin/python initialize.py -sdu admin
+echo
+echo "Anote a senha acima. Usuario: lndg-admin"
+read -p "Pressione qualquer tecla para continuar..."
 .venv/bin/python jobs.py
+.venv/bin/python manage.py runserver 0.0.0.0:8889 --insecure
 sudo bash nginx.sh
-sudo systemctl restart uwsgi.service
 
 cat << EOF > /home/admin/lndg/jobs.sh
 #!/bin/bash
@@ -95,6 +97,8 @@ sudo systemctl enable rebalancer-lndg.timer
 sudo systemctl start rebalancer-lndg.timer
 sudo systemctl enable htlc-stream-lndg.service
 sudo systemctl start htlc-stream-lndg.service
+sudo ufw allow 8889
+sudo systemctl restart uwsgi.service
 
 echo
 echo "Concluído. Acesse a interface via 127.0.0.1:8889 ou localhost:8889"
